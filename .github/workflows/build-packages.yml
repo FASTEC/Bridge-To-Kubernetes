@@ -36,6 +36,10 @@ jobs:
       - name: checkout source code
         uses: actions/checkout@v4
 
+      - name: dotnet restore
+        run: |
+          nuget restore src/dsc -f
+
       - name: dotnet publish
         run: |
           dotnet publish src/dsc/dsc.csproj -r ${{ matrix.platform }} -c Release --no-restore --self-contained true --verbosity detailed
