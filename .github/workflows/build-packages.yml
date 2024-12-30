@@ -23,6 +23,7 @@ jobs:
           - windows-arm64
           - osx-x64
           - osx-arm64
+      fail-fast: false # windows not working
     steps:
       - name: setup dotnet
         uses: actions/setup-dotnet@v4
