@@ -46,5 +46,5 @@ jobs:
 
       - name: Run unit test cases
         run: | 
-          dotnet restore src\unittest.sln
-          dotnet test src\unittest.sln -c Release --no-restore --verbosity normal
+          dotnet restore src/unittest.sln
+          dotnet test src/unittest.sln -c Release --no-restore --verbosity normal
