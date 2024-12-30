@@ -38,7 +38,7 @@ jobs:
 
       - name: dotnet restore
         run: |
-          nuget restore src/dsc -f
+          dotnet restore src/dsc -f
 
       - name: dotnet publish
         run: |
