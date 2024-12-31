@@ -86,6 +86,10 @@ jobs:
       - name: download release artifacts
         uses: actions/download-artifact@v4
 
+      - name: list files
+        run: |
+          ls -lah
+
       - name: upload release assets
         uses: softprops/action-gh-release@v2
         with:
