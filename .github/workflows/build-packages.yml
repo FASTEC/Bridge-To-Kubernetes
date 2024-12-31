@@ -38,11 +38,15 @@ jobs:
 
       - name: dotnet restore
         run: |
-          dotnet restore src/dsc -f
+          nuget restore src\client.sln -Verbosity Normal -NonInteractive -ConfigFile src/nuget.config
 
-      - name: dotnet publish
+      - name: dotnet publish src/dsc/dsc.csproj
         run: |
           dotnet publish src/dsc/dsc.csproj -r ${{ matrix.platform }} -c Release --no-restore --self-contained true --verbosity detailed
+
+      - name: dotnet publish src\EndpointManagerLauncher\endpointmanagerlauncher.csproj
+        if: ${{ matrix.platform == 'win-x64' || matrix.platform == 'win-arm64'}}
+        run: dotnet publish src\EndpointManagerLauncher\endpointmanagerlauncher.csproj -r ${{ matrix.platform }} -c Release --no-restore
 
       - name: Run unit test cases
         run: | 
