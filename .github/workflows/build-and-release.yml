@@ -53,7 +53,7 @@ jobs:
       - name: endpointmanagerlauncher for windows
         if: ${{ matrix.platform == 'win-x64' || matrix.platform == 'win-arm64'}}
         run: |
-          cp -r src/EndpointManagerLauncher/bin/Release/net7.0/${{ matrix.platform }}/publish src/dsc/bin/Release/net7.0/${{ matrix.platform }}/publish/EndpointManagerLauncher/
+          cp -r src/EndpointManagerLauncher/bin/Release/net8.0/${{ matrix.platform }}/publish src/dsc/bin/Release/net8.0/${{ matrix.platform }}/publish/EndpointManagerLauncher/
 
       - name: Run unit test cases
         run: | 
@@ -64,10 +64,10 @@ jobs:
       - name: zip package for release
         # if: ${{ github.ref_type == 'tag' }}
         run: |
-          cd src/dsc/bin/Release/net7.0/${{ matrix.platform }}/publish
+          cd src/dsc/bin/Release/net8.0/${{ matrix.platform }}/publish
           zip -r ${{ env.RELEASE_FILENAME }} .
           cd -
-          mv src/dsc/bin/Release/net7.0/${{ matrix.platform }}/publish/${{ env.RELEASE_FILENAME }} .
+          mv src/dsc/bin/Release/net8.0/${{ matrix.platform }}/publish/${{ env.RELEASE_FILENAME }} .
 
       - name: workflow artifact - ${{ env.RELEASE_FILENAME }}
         uses: actions/upload-artifact@v4
