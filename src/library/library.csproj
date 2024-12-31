@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RuntimeIdentifiers>win-x64;win-arm64;osx-x64;osx-arm64;linux-x64;linux-arm64</RuntimeIdentifiers>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <AssemblyName>Microsoft.BridgeToKubernetes.Library</AssemblyName>
@@ -57,7 +57,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\EndpointManager\bin\$(Configuration)\net7.0\**" Condition="'$(BUILDING_CLIENT_NUGET)' == 'true'">
+    <Content Include="..\EndpointManager\bin\$(Configuration)\net8.0\**" Condition="'$(BUILDING_CLIENT_NUGET)' == 'true'">
       <Pack>true</Pack>
       <PackagePath>contentFiles\any\any;content</PackagePath>
     </Content>
