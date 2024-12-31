@@ -53,9 +53,7 @@ jobs:
       - name: endpointmanagerlauncher for windows
         if: ${{ matrix.platform == 'win-x64' || matrix.platform == 'win-arm64'}}
         run: |
-          ls -alh src/dsc/bin/Release/net7.0/${{ matrix.platform }}/publish
-          mkdir -p src/dsc/bin/Release/net7.0/${{ matrix.platform }}/publish/EndpointManagerLauncher
-          cp -r src/EndpointManagerLauncher/bin/Release/net7.0/${{ matrix.platform }}/publish ${{ env.RELEASE_FILENAME }} src/dsc/bin/Release/net7.0/${{ matrix.platform }}/publish/EndpointManagerLauncher/
+          cp -r src/EndpointManagerLauncher/bin/Release/net7.0/${{ matrix.platform }}/publish src/dsc/bin/Release/net7.0/${{ matrix.platform }}/publish/EndpointManagerLauncher/
 
       - name: Run unit test cases
         run: | 
