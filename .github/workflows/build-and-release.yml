@@ -85,6 +85,9 @@ jobs:
     steps:
       - name: download release artifacts
         uses: actions/download-artifact@v4
+        with:
+          path: release
+          merge-multiple: true
 
       - name: list files
         run: |
@@ -94,9 +97,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            linux-x64.zip
-            linux-arm64.zip
-            win-x64.zip
-            win-arm64.zip
-            osx-x64.zip
-            osx-arm64.zip
+            release/linux-x64.zip
+            release/linux-arm64.zip
+            release/win-x64.zip
+            release/win-arm64.zip
+            release/osx-x64.zip
+            release/osx-arm64.zip
