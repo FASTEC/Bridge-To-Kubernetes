@@ -36,9 +36,9 @@ jobs:
       - name: checkout source code
         uses: actions/checkout@v4
 
-      - name: dotnet restore
+      - name: nuget restore
         run: |
-          nuget restore src\client.sln -Verbosity Normal -NonInteractive -ConfigFile src/nuget.config
+          nuget restore src/client.sln -Verbosity Normal -NonInteractive -ConfigFile src/nuget.config
 
       - name: dotnet publish src/dsc/dsc.csproj
         run: |
