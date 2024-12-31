@@ -24,6 +24,8 @@ jobs:
           - osx-x64
           - osx-arm64
       fail-fast: false # windows not working
+    env:
+      RELEASE_FILENAME: ${{ matrix.platform }}.zip
     steps:
       - name: setup dotnet
         uses: actions/setup-dotnet@v4
@@ -53,3 +55,23 @@ jobs:
           dotnet restore src/unittest.sln
           # dotnet test src/unittest.sln -c Release --no-restore --verbosity normal
           dotnet test src/dsc.tests/dsc.tests.csproj -c Release --no-restore --verbosity normal
+
+      - name: zip package for release
+        # if: ${{ github.ref_type == 'tag' }}
+        run: |
+          zip -r ${{ env.RELEASE_FILENAME }} src/dsc/bin/Release/net7.0/${{ matrix.platform }}/publish
+
+      - name: workflow artifact - ${{ env.RELEASE_FILENAME }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.RELEASE_FILENAME }}
+          path: |
+            ${{ env.RELEASE_FILENAME }}
+          retention-days: 7
+
+      - name: upload release asset
+        if: ${{ github.ref_type == 'tag' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ env.RELEASE_FILENAME }}
