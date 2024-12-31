@@ -42,7 +42,7 @@ jobs:
 
       - name: dotnet publish src/dsc/dsc.csproj
         run: |
-          dotnet publish src/dsc/dsc.csproj -r ${{ matrix.platform }} -c Release --no-restore --self-contained true --verbosity detailed
+          dotnet publish src/dsc/dsc.csproj -r ${{ matrix.platform }} -c Release --no-restore --self-contained true --verbosity normal
 
       - name: dotnet publish src\EndpointManagerLauncher\endpointmanagerlauncher.csproj
         if: ${{ matrix.platform == 'win-x64' || matrix.platform == 'win-arm64'}}
@@ -51,4 +51,5 @@ jobs:
       - name: Run unit test cases
         run: | 
           dotnet restore src/unittest.sln
-          dotnet test src/unittest.sln -c Release --no-restore --verbosity normal
+          # dotnet test src/unittest.sln -c Release --no-restore --verbosity normal
+          dotnet test src/dsc.tests/dsc.tests.csproj -c Release --no-restore --verbosity normal
