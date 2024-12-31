@@ -64,7 +64,10 @@ jobs:
       - name: zip package for release
         # if: ${{ github.ref_type == 'tag' }}
         run: |
-          zip -r ${{ env.RELEASE_FILENAME }} src/dsc/bin/Release/net7.0/${{ matrix.platform }}/publish
+          cd src/dsc/bin/Release/net7.0/${{ matrix.platform }}/publish
+          zip -r ${{ env.RELEASE_FILENAME }} .
+          cd -
+          mv src/dsc/bin/Release/net7.0/${{ matrix.platform }}/publish/${{ env.RELEASE_FILENAME }} .
 
       - name: workflow artifact - ${{ env.RELEASE_FILENAME }}
         uses: actions/upload-artifact@v4
