@@ -1,4 +1,4 @@
-name: Build packages
+name: Build and release
 
 on:
   workflow_dispatch:
@@ -22,7 +22,7 @@ jobs:
           - win-arm64
           - osx-x64
           - osx-arm64
-      fail-fast: false # windows not working
+      fail-fast: true
     env:
       RELEASE_FILENAME: ${{ matrix.platform }}.zip
     steps:
@@ -47,7 +47,13 @@ jobs:
 
       - name: dotnet publish src/EndpointManagerLauncher/endpointmanagerlauncher.csproj
         if: ${{ matrix.platform == 'win-x64' || matrix.platform == 'win-arm64'}}
-        run: dotnet publish src/EndpointManagerLauncher/endpointmanagerlauncher.csproj -r ${{ matrix.platform }} -c Release --no-restore
+        run: |
+          dotnet publish src/EndpointManagerLauncher/endpointmanagerlauncher.csproj -r ${{ matrix.platform }} -c Release --no-restore
+
+      - name: endpointmanagerlauncher for windows
+        if: ${{ matrix.platform == 'win-x64' || matrix.platform == 'win-arm64'}}
+        run: |
+          cp -r src/EndpointManagerLauncher/bin/Release/net7.0/${{ matrix.platform }}/publish ${{ env.RELEASE_FILENAME }} src/dsc/bin/Release/net7.0/${{ matrix.platform }}/publish/EndpointManagerLauncher
 
       - name: Run unit test cases
         run: | 
@@ -68,9 +74,23 @@ jobs:
             ${{ env.RELEASE_FILENAME }}
           retention-days: 7
 
-      - name: upload release asset
-        if: ${{ github.ref_type == 'tag' }}
+  release:
+    if: ${{ github.ref_type == 'tag' }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    needs:
+      - build_packages
+    steps:
+      - name: download release artifacts
+        uses: actions/download-artifact@v4
+
+      - name: upload release assets
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            ${{ env.RELEASE_FILENAME }}
+            linux-x64.zip
+            linux-arm64.zip
+            win-x64.zip
+            win-arm64.zip
+            osx-x64.zip
+            osx-arm64.zip
