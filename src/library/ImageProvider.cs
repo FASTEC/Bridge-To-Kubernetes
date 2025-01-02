@@ -22,7 +22,7 @@ namespace Microsoft.BridgeToKubernetes.Library
 
         private static readonly IReadOnlyDictionary<ReleaseEnvironment, string> ContainerRegistries = new Dictionary<ReleaseEnvironment, string>()
             {
-                { ReleaseEnvironment.Production, "go1images.azurecr.io" },
+                { ReleaseEnvironment.Production, "docker.io/go1com" },
                 { ReleaseEnvironment.Staging, "mindarostage.azurecr.io" },
                 { ReleaseEnvironment.Development, "mindarodev.azurecr.io" },
                 { ReleaseEnvironment.Local, "mindarodev.azurecr.io" },
