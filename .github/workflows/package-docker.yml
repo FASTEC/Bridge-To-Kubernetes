@@ -23,6 +23,7 @@ jobs:
       IMAGE: go1com/${{ matrix.imageName }}
       REF: ${{ github.ref_name }}
       IMAGE_CACHE_MODE: max
+      IMAGE_CACHE_SCOPE: ${{ matrix.imageName }}
       DOCKERFILE: src/${{ matrix.component }}/Dockerfile
     steps:
       - name: Checkout code
@@ -47,7 +48,7 @@ jobs:
           push: ${{ github.ref_type == 'tag' }}
           tags: ${{ env.IMAGE }}:stable,${{ env.IMAGE }}:${{ env.REF }}
           # https://docs.docker.com/build/cache/backends/gha/#scope
-          cache-from: ${{ format('type=gha,scope={0}', matrix.imageName) }}
+          cache-from: ${{ format('type=gha,scope={0}', env.IMAGE_CACHE_SCOPE) }}
           cache-to: >-
             ${{
               github.ref_name == github.event.repository.default_branch
