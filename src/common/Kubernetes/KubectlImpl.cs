@@ -419,13 +419,24 @@ namespace Microsoft.BridgeToKubernetes.Common.Kubernetes
 
             // Check if kubectl is available in the system path
             string kubectlSystemPath = null;
-            if (this._platform.IsWindows)
+            try
             {
-                kubectlSystemPath = _fileSystem.Path.GetFullPath("where kubectl");
+                var processInfo = new ProcessStartInfo
+                {
+                    FileName = this._platform.IsWindows ? "where" : "which",
+                    Arguments = "kubectl",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false
+                };
+                using (var process = _platform.CreateProcess(processInfo))
+                {
+                    process.Start();
+                    kubectlSystemPath = process.StandardOutput.ReadLine()?.Trim();
+                }
             }
-            else
+            catch
             {
-                kubectlSystemPath = _fileSystem.Path.GetFullPath("which kubectl");
+                kubectlSystemPath = null;
             }
 
             _log.Info($"kubectl system path value: '{kubectlSystemPath}'");
