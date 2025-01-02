@@ -232,7 +232,7 @@ copy_b2k_files() {
         installdir=$HOME/.local/bin/bridgetokubernetes
         remove_tmp_dirs $installdir
         cp -r $HOME/tmp/bridgetokubernetes/ $installdir
-        chmod -R +x $installdir/dsc $installdir/EndpointManager/EndpointManager
+        chmod -R +x $installdir/dsc $installdir/EndpointManager/EndpointManager $installdir/b2k.sh
         # chmod -R +x $installdir/dsc $installdir/kubectl $installdir/EndpointManager/EndpointManager
         create_sym_link $installdir/dsc $HOME/.local/bin/dsc
         create_sym_link $installdir/b2k.sh $HOME/.local/bin/b2k
@@ -241,7 +241,7 @@ copy_b2k_files() {
         installdir=/usr/local/bin/bridgetokubernetes
         remove_tmp_dirs $installdir sudo
         sudo cp -r $HOME/tmp/bridgetokubernetes/  $installdir
-        sudo chmod -R +x $installdir/dsc $installdir/EndpointManager/EndpointManager
+        sudo chmod -R +x $installdir/dsc $installdir/EndpointManager/EndpointManager $installdir/b2k.sh
         # sudo chmod -R +x $installdir/dsc $installdir/kubectl $installdir/EndpointManager/EndpointManager
         create_sym_link $installdir/dsc /usr/local/bin/dsc sudo
         create_sym_link $installdir/b2k.sh /usr/local/bin/b2k sudo
