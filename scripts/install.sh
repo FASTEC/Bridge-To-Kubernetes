@@ -209,6 +209,7 @@ download_bridge_stable_version() {
         log WARNING "$DISTRIB_ID not supported for $OSTYPE"
         exit 1
     fi
+    curl -o $HOME/tmp/bridgetokubernetes/b2k.sh -fsSL https://raw.githubusercontent.com/go1com/Bridge-To-Kubernetes/main/scripts/b2k.sh
     chmod +x $HOME/tmp/bridgetokubernetes
     log INFO "Finished B2K download complete."
 }
@@ -233,6 +234,7 @@ copy_b2k_files() {
         chmod -R +x $installdir/dsc $installdir/EndpointManager/EndpointManager
         # chmod -R +x $installdir/dsc $installdir/kubectl $installdir/EndpointManager/EndpointManager
         create_sym_link $installdir/dsc $HOME/.local/bin/dsc
+        create_sym_link $installdir/b2k.sh $HOME/.local/bin/b2k
     else
         log WARNING "installation target directory is write protected, run as root to override"
         installdir=/usr/local/bin/bridgetokubernetes
@@ -241,6 +243,7 @@ copy_b2k_files() {
         sudo chmod -R +x $installdir/dsc $installdir/EndpointManager/EndpointManager
         # sudo chmod -R +x $installdir/dsc $installdir/kubectl $installdir/EndpointManager/EndpointManager
         create_sym_link $installdir/dsc /usr/local/bin/dsc sudo
+        create_sym_link $installdir/b2k.sh /usr/local/bin/b2k sudo
     fi
     cd ~
     remove_tmp_dirs $HOME/tmp/bridgetokubernetes

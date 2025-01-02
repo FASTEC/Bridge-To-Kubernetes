@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+UUID=$(cat /proc/sys/kernel/random/uuid)
+
+if [ -z "${SVC}" ]; then
+    read -p 'Service: ' SVC
+fi
+
+ROUTING=${SVC}-${UUID}
+
+if [ -z "${NS}" ]; then
+    read -p 'Namespace: ' NS
+fi
+
+if [ -z "${PORT}" ]; then
+    read -p 'Local Port(s) (space separated for multiple): ' PORT
+fi
+
+LOCAL_PORTS=""
+for i in ${PORT}; do
+    LOCAL_PORTS="${LOCAL_PORTS} --local-port ${i}"
+done
+
+dsc connect \
+    --service ${SVC} \
+    --routing ${ROUTING} \
+    --namespace ${NS} \
+    ${LOCAL_PORTS} \
+    --use-kubernetes-service-environment-variables  
