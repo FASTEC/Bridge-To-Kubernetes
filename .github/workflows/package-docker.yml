@@ -48,7 +48,7 @@ jobs:
           platforms: linux/arm64,linux/amd64
           pull: true
           push: ${{ github.ref_type == 'tag' }}
-          tags: ${{ env.IMAGE }}/stable,${{ env.IMAGE }}:${{ env.REF }}
+          tags: ${{ env.IMAGE }}:stable,${{ env.IMAGE }}:${{ env.REF }}
           # https://docs.docker.com/build/cache/backends/gha/#scope
           cache-from: ${{ format('type=gha,scope={0}', matrix.imageName) }}
           cache-to: >-
