@@ -9,19 +9,6 @@ on:
       - '**'
 
 jobs:
-  create-release-id:
-    if: ${{ github.ref_name == github.event.repository.default_branch }}
-    runs-on: ubuntu-22.04
-    timeout-minutes: 5
-    # Map a step output to a job output
-    outputs:
-      tag: ${{ steps.create_id.outputs.TAG }}
-    steps:
-      - id: create_id
-        run: |
-          export TAG=$(TZ="UTC" date +"%Y%m%d%H%M")
-          echo "TAG=${TAG}" >> ${GITHUB_OUTPUT}
-
   build-and-release:
     uses: ./.github/workflows/build-and-release.yml
     secrets: inherit
@@ -35,17 +22,20 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 5
     needs:
-      - create-release-id
       - build-and-release
       - package-docker
     permissions:
       contents: write # needed to mint tag
       actions: write # needed to tigger workflow
     env:
-      TAG: ${{ needs.create-release-id.outputs.tag }}
       SHA: ${{ github.sha }}
     steps:
-      - name: create tag ${{ env.TAG }} from sha ${{ env.SHA }}
+      - id: create_id
+        run: |
+          export TAG=$(TZ="UTC" date +"%Y%m%d%H%M")
+          echo "TAG=${TAG}" >> ${GITHUB_OUTPUT}
+
+      - name: create tag ${{ steps.create_id.outputs.TAG }} from sha ${{ env.SHA }}
         uses: actions/github-script@v7
         with:
           github-token: ${{ github.token }}
@@ -53,11 +43,11 @@ jobs:
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: "refs/tags/${{ env.TAG }}",
+              ref: "refs/tags/${{ steps.create_id.outputs.TAG }}",
               sha: "${{ env.SHA }}"
             })
 
-      - name: trigger workflow for tag ${{ env.TAG }}
+      - name: trigger workflow for tag ${{ steps.create_id.outputs.TAG }}
         uses: actions/github-script@v7
         with:
           script: |
@@ -65,5 +55,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: 'test.yml',
-              ref: "refs/tags/${{ env.TAG }}",
+              ref: "refs/tags/${{ steps.create_id.outputs.TAG }}",
             })
