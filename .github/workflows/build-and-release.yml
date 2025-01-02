@@ -22,7 +22,7 @@ jobs:
       fail-fast: true
     env:
       RELEASE_FILENAME: ${{ matrix.platform }}.zip
-      BUILD_BUILDNUMBER: ${{ github.ref_type == 'tag' && github.ref_name || '' }} # non-numerical will break this
+      # BUILD_BUILDNUMBER: ${{ github.ref_type == 'tag' && github.ref_name || '' }} # non-numerical will break this
     steps:
       - name: setup dotnet
         uses: actions/setup-dotnet@v4
