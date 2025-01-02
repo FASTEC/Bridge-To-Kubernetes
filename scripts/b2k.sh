@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-UUID=$(cat /proc/sys/kernel/random/uuid)
+if ! UUID=$(cat /proc/sys/kernel/random/uuid 2>/dev/null); then
+    UUID=$(uuidgen | tr '[:upper:]' '[:lower:]')
+fi
 
 if [ -z "${SVC}" ]; then
     read -p 'Service: ' SVC
