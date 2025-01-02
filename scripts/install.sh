@@ -9,7 +9,8 @@
 #                    |___/
 # usage:
 #    curl -fsSL https://raw.githubusercontent.com/go1com/Bridge-To-Kubernetes/main/scripts/install.sh | bash -s -- [version]
-#    Example: curl -fsSL https://raw.githubusercontent.com/go1com/Bridge-To-Kubernetes/main/scripts/install.sh | bash -s -- v1.0.0
+#    Example: curl -fsSL https://raw.githubusercontent.com/go1com/Bridge-To-Kubernetes/main/scripts/install.sh | bash -s -- 202501020709
+#    From: https://github.com/go1com/Bridge-To-Kubernetes/releases
 set -ef
 
 log() {
@@ -271,6 +272,11 @@ install() {
         exit 1
     fi
     VERSION=${1}
+    if [ -z "${VERSION}" ]; then
+        log ERROR "Version parameter is required. Example: 202501020709"
+        log ERROR "Versions: https://github.com/go1com/Bridge-To-Kubernetes/releases"
+        exit 1
+    fi
     echo "This install will fail without kubectl and dotnet 8 present"
     log INFO "Proceeding with installation for VERSION=${VERSION}"
     # check_jq_processor_present
