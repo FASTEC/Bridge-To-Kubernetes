@@ -196,8 +196,8 @@ fi
 
 # Download bridge stable version, this can be done via following command curl -LO $(curl -L -s https://aka.ms/bridge-lks | jq -r '.linux.url')
 download_bridge_stable_version() {
-    log INFO "Starting B2K Download"
     VERSION=${1}
+    log INFO "Starting B2K Download for VERSION=${1}"
     CURLPROCESS=
     if [[ $OSTYPE == "linux"* ]]; then
         curl --create-dirs -# -o $HOME/tmp/bridgetokubernetes/lpk-linux.zip -LO "https://github.com/go1com/Bridge-To-Kubernetes/releases/download/${VERSION}/linux-x64.zip"
@@ -267,14 +267,15 @@ install() {
         file_issue_prompt
         exit 1
     fi
+    VERSION=${1}
     echo "This install will fail without kubectl and dotnet 8 present"
-    log INFO "Proceeding with installation"
+    log INFO "Proceeding with installation for VERSION=${VERSION}"
     # check_jq_processor_present
     # check_kubectl_present
     # check_dotnet_runtime_present
-    download_bridge_stable_version
+    download_bridge_stable_version ${VERSION}
     copy_b2k_files
     echo "Bridge to kubernetes installed in $installdir"
 }
 
-install
+install $@
