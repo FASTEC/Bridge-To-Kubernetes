@@ -32,11 +32,38 @@ jobs:
 
   create-tag:
     if: ${{ github.ref_name == github.event.repository.default_branch }}
-    uses: go1com/gh-actions/.github/workflows/ci-create-tag.yml@main
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
     needs:
       - create-release-id
       - build-and-release
       - package-docker
-    with:
-      tag: ${{ needs.create-release-id.outputs.tag }}
-    secrets: inherit
+    permissions:
+      contents: write # needed to mint tag
+      actions: write # needed to tigger workflow
+    env:
+      TAG: ${{ needs.create-release-id.outputs.tag }}
+      SHA: ${{ github.sha }}
+    steps:
+      - name: create tag ${{ env.TAG }} from sha ${{ env.SHA }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/${{ env.TAG }}",
+              sha: "${{ env.SHA }}"
+            })
+
+      - name: trigger workflow for tag ${{ env.TAG }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'test.yml',
+              ref: "refs/tags/${{ env.TAG }}",
+            })
