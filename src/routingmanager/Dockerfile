@@ -19,7 +19,7 @@ ENV MINDARO_BUILD_NUMBER=${MindaroBuildNumber}
 RUN dotnet publish -c ${Configuration} -a ${TARGETARCH} --self-contained false --no-restore -o /src/publish
 
 # Final container
-FROM mcr.microsoft.com/dotnet/sdk:8.0-cbl-mariner2.0 as final
+FROM mcr.microsoft.com/dotnet/sdk:8.0-cbl-mariner2.0 AS final
 ARG TARGETARCH
 ARG KUBECTL_VERSION=v1.27.3
 ARG INSTALL_LOCATION=/app/kubectl/linux

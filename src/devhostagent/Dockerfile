@@ -19,7 +19,7 @@ ENV MINDARO_BUILD_NUMBER=${MindaroBuildNumber}
 RUN dotnet publish -c ${Configuration} -a ${TARGETARCH} --self-contained false --no-restore -o /src/publish devhostAgent.csproj
 
 # Final container
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-cbl-mariner2.0 as final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-cbl-mariner2.0 AS final
 
 RUN tdnf clean all && \
  tdnf check-update && \

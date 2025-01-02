@@ -15,6 +15,7 @@ jobs:
     concurrency: b2k-${{ matrix.platform }}
     strategy:
       matrix:
+        # TODO: arm64 seems un-used? install.sh was using x64 binaries, and I confirmed locally on OSX arm that x64 binry works -> https://github.com/go1com/Bridge-To-Kubernetes/blob/fec6f302cf821bb0e958084c7d607dac0ba8888d/scripts/install.sh#L166
         platform:
           - linux-x64
           - linux-arm64
