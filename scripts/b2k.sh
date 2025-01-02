@@ -22,6 +22,8 @@ for i in ${PORT}; do
     LOCAL_PORTS="${LOCAL_PORTS} --local-port ${i}"
 done
 
+echo "Connecting service ${SVC} in namepace ${NS} to ports ${PORT} with routing ${ROUTING}"
+
 dsc connect \
     --service ${SVC} \
     --routing ${ROUTING} \
