@@ -417,35 +417,40 @@ namespace Microsoft.BridgeToKubernetes.Common.Kubernetes
                 return _kubectlFilePath;
             }
 
-            string directoryName;
-            string executableName;
+            // Check if kubectl is available in the system path
+            string kubectlSystemPath = null;
+            try
+            {
+                var processInfo = new ProcessStartInfo
+                {
+                    FileName = this._platform.IsWindows ? "where" : "which",
+                    Arguments = "kubectl",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false
+                };
+                using (var process = _platform.CreateProcess(processInfo))
+                {
+                    process.Start();
+                    kubectlSystemPath = process.StandardOutput.ReadLine()?.Trim();
+                }
+            }
+            catch
+            {
+                kubectlSystemPath = null;
+            }
 
-            if (this._platform.IsWindows)
+            _log.Info($"kubectl system path value: '{kubectlSystemPath}'");
+
+            if (!string.IsNullOrEmpty(kubectlSystemPath) && _fileSystem.FileExists(kubectlSystemPath))
             {
-                directoryName = ExecutableLocation.Windows.Directory;
-                executableName = ExecutableLocation.Windows.Name;
-            }
-            else if (this._platform.IsOSX)
-            {
-                directoryName = ExecutableLocation.OSX.Directory;
-                executableName = ExecutableLocation.OSX.Name;
-            }
-            else if (this._platform.IsLinux)
-            {
-                directoryName = ExecutableLocation.Linux.Directory;
-                executableName = ExecutableLocation.Linux.Name;
+                _log.Verbose($"Using kubectl found in system path: '{kubectlSystemPath}'");
+                return kubectlSystemPath;
             }
             else
             {
                 _log.Error("Failed to determine runtime OS for kubectl.");
                 throw new KubectlException(CommonResources.KubectlNotSupportedMessage);
             }
-
-            var kubectlPath = _fileSystem.Path.Combine(_fileSystem.Path.GetExecutingAssemblyDirectoryPath(), ExecutableLocation.ParentDirectory, directoryName, executableName);
-            AssertHelper.True(_fileSystem.FileExists(kubectlPath), $"Private copy of kubectl not found at expected location: '{kubectlPath}'");
-            _log.Verbose($"Using kubectl found at: '{kubectlPath}'");
-
-            return kubectlPath;
         }
     }
 }

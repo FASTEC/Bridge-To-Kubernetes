@@ -1,0 +1,112 @@
+name: Build and release
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  build_packages:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    concurrency: b2k-${{ matrix.platform }}
+    strategy:
+      matrix:
+        # TODO: arm64 seems un-used? install.sh was using x64 binaries, and I confirmed locally on OSX arm that x64 binry works -> https://github.com/go1com/Bridge-To-Kubernetes/blob/fec6f302cf821bb0e958084c7d607dac0ba8888d/scripts/install.sh#L166
+        platform:
+          - linux-x64
+          - linux-arm64
+          - win-x64
+          - win-arm64
+          - osx-x64
+          - osx-arm64
+      fail-fast: true
+    env:
+      RELEASE_FILENAME: ${{ matrix.platform }}.zip
+    steps:
+      - name: setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: setup NuGet
+        uses: nuget/setup-nuget@v2
+
+      - name: checkout source code
+        uses: actions/checkout@v4
+
+      - name: create versioned imagetag.setting
+        working-directory: deployment/settings/services
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          envsubst < imagetag.setting.template > imagetag.setting
+
+      - name: nuget restore
+        run: |
+          nuget restore src/client.sln -Verbosity Normal -NonInteractive -ConfigFile src/nuget.config
+
+      - name: dotnet publish src/dsc/dsc.csproj
+        run: |
+          dotnet publish src/dsc/dsc.csproj -r ${{ matrix.platform }} -c Release --no-restore --self-contained true --verbosity normal
+
+      - name: dotnet publish src/EndpointManagerLauncher/endpointmanagerlauncher.csproj
+        if: ${{ matrix.platform == 'win-x64' || matrix.platform == 'win-arm64'}}
+        run: |
+          dotnet publish src/EndpointManagerLauncher/endpointmanagerlauncher.csproj -r ${{ matrix.platform }} -c Release --no-restore
+
+      - name: endpointmanagerlauncher for windows
+        if: ${{ matrix.platform == 'win-x64' || matrix.platform == 'win-arm64'}}
+        run: |
+          cp -r src/EndpointManagerLauncher/bin/Release/net8.0/${{ matrix.platform }}/publish src/dsc/bin/Release/net8.0/${{ matrix.platform }}/publish/EndpointManagerLauncher/
+
+      - name: Run unit test cases
+        run: | 
+          dotnet restore src/unittest.sln
+          # dotnet test src/unittest.sln -c Release --no-restore --verbosity normal
+          dotnet test src/dsc.tests/dsc.tests.csproj -c Release --no-restore --verbosity normal
+
+      - name: zip package for release
+        # if: ${{ github.ref_type == 'tag' }}
+        run: |
+          cd src/dsc/bin/Release/net8.0/${{ matrix.platform }}/publish
+          zip -r ${{ env.RELEASE_FILENAME }} .
+          cd -
+          mv src/dsc/bin/Release/net8.0/${{ matrix.platform }}/publish/${{ env.RELEASE_FILENAME }} .
+
+      - name: workflow artifact - ${{ env.RELEASE_FILENAME }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.RELEASE_FILENAME }}
+          path: |
+            ${{ env.RELEASE_FILENAME }}
+          retention-days: 7
+
+  release:
+    if: ${{ github.ref_type == 'tag' }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    permissions:
+      contents: write # needed to upload release assets
+    needs:
+      - build_packages
+    steps:
+      - name: download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release
+          merge-multiple: true
+
+      - name: list files
+        run: |
+          ls -lah
+
+      - name: upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release/linux-x64.zip
+            release/linux-arm64.zip
+            release/win-x64.zip
+            release/win-arm64.zip
+            release/osx-x64.zip
+            release/osx-arm64.zip
