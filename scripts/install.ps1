@@ -1,6 +1,6 @@
 param(
-    [Parameter(Mandatory=$false)]
-    [string]$Version = "test-tag13"
+    [Parameter(Mandatory=$true)]
+    [string]$Version
 )
 
 # Define installation directory

@@ -197,7 +197,7 @@ fi
 # Download bridge stable version, this can be done via following command curl -LO $(curl -L -s https://aka.ms/bridge-lks | jq -r '.linux.url')
 download_bridge_stable_version() {
     log INFO "Starting B2K Download"
-    VERSION=${1:-test-tag13}
+    VERSION=${1}
     CURLPROCESS=
     if [[ $OSTYPE == "linux"* ]]; then
         curl --create-dirs -# -o $HOME/tmp/bridgetokubernetes/lpk-linux.zip -LO "https://github.com/go1com/Bridge-To-Kubernetes/releases/download/${VERSION}/linux-x64.zip"
