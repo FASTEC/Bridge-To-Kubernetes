@@ -1,12 +1,8 @@
 name: 'Package Docker'
 
 on:
-  push:
-    branches:
-      - main
-      - DO-3077 # TODO: remove after testing
-    tags:
-      - '*'
+  workflow_call:
+  workflow_dispatch:
 
 jobs:
   package_docker:

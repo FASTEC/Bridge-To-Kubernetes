@@ -1,0 +1,42 @@
+name: 'CI'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - '**'
+    tags:
+      - '**'
+
+jobs:
+  create-release-id:
+    if: ${{ github.ref_name == github.event.repository.default_branch }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    # Map a step output to a job output
+    outputs:
+      tag: ${{ steps.create_id.outputs.TAG }}
+    steps:
+      - id: create_id
+        run: |
+          export TAG=$(TZ="UTC" date +"%Y%m%d%H%M")
+          echo "TAG=${TAG}" >> ${GITHUB_OUTPUT}
+
+  build-and-release:
+    uses: ./.github/workflows/build-and-release.yml
+    secrets: inherit
+  
+  package-docker:
+    uses: ./.github/workflows/package-docker.yml
+    secrets: inherit
+
+  create-tag:
+    if: ${{ github.ref_name == github.event.repository.default_branch }}
+    uses: go1com/gh-actions/.github/workflows/ci-create-tag.yml@main
+    needs:
+      - create-release-id
+      - build-and-release
+      - package-docker
+    with:
+      tag: ${{ needs.create-release-id.outputs.tag }}
+    secrets: inherit

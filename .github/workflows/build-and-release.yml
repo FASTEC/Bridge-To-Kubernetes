@@ -1,12 +1,8 @@
 name: Build and release
 
 on:
+  workflow_call:
   workflow_dispatch:
-  push:
-    branches:
-      - '**'
-    tags:
-      - '**'
 
 jobs:
   build_packages:
@@ -37,6 +33,13 @@ jobs:
 
       - name: checkout source code
         uses: actions/checkout@v4
+
+      - name: create versioned imagetag.setting
+        working-directory: deployment/settings/services
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          envsubst < imagetag.setting.template > imagetag.setting
 
       - name: nuget restore
         run: |
