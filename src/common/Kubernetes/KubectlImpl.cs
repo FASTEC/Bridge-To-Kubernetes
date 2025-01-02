@@ -428,6 +428,8 @@ namespace Microsoft.BridgeToKubernetes.Common.Kubernetes
                 kubectlSystemPath = _fileSystem.Path.GetFullPath("which kubectl");
             }
 
+            _log.Info($"kubectl system path value: '{kubectlSystemPath}'");
+
             if (!string.IsNullOrEmpty(kubectlSystemPath) && _fileSystem.FileExists(kubectlSystemPath))
             {
                 _log.Verbose($"Using kubectl found in system path: '{kubectlSystemPath}'");
