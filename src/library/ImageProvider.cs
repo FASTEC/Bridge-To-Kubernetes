@@ -71,7 +71,12 @@ namespace Microsoft.BridgeToKubernetes.Library
 
         private static class RoutingManager
         {
-            internal static string Name => $"{Common.Constants.Routing.RoutingManagerNameLower}:stable";
+            // To change RestorationJobImageName tag, please update deployment\settings\services\imagetag.setting accordingly
+            private static Lazy<string> _tag = new Lazy<string>(() => EmbeddedFileUtilities.GetImageTag("MINDARO_ROUTINGMANAGER_TAG"));
+
+            public static string Version => _tag.Value;
+
+            internal static string Name => $"{Common.Constants.Routing.RoutingManagerNameLower}:{_tag.Value}";
         }
 
         public ImageProvider(ILog log, IEnvironmentVariables environmentVariables)
