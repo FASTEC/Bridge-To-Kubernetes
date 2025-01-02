@@ -267,9 +267,7 @@ install() {
         file_issue_prompt
         exit 1
     fi
-    echo "This install will fail without kubectl and dotnet 8 present."
-    echo "Press any key to proceed with installation ..."
-    read -n 1 -s -r
+    echo "This install will fail without kubectl and dotnet 8 present"
     log INFO "Proceeding with installation"
     # check_jq_processor_present
     # check_kubectl_present
