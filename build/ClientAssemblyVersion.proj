@@ -4,13 +4,13 @@ The assembly version changes based on the build ID, so we can recover from its n
 -->
 <Project>
     <PropertyGroup>
-        <!-- e.g.: BUILD_TAG=2.0.20250103.0130 --> 
+        <!-- e.g.: BUILD_TAG=2.2025.0103.0130 --> 
         <MajorVersion Condition=" '$(BUILD_TAG)' != '' ">$([System.Text.RegularExpressions.Regex]::Split('$(BUILD_TAG)', '\.')[0])</MajorVersion>
         <MinorVersion Condition=" '$(BUILD_TAG)' != '' ">$([System.Text.RegularExpressions.Regex]::Split('$(BUILD_TAG)', '\.')[1])</MinorVersion>
 
         <!-- e.g.: BUILD_TAG= -->
         <MajorVersion Condition=" '$(BUILD_TAG)' == '' ">2</MajorVersion>
-        <MinorVersion Condition=" '$(BUILD_TAG)' == '' ">0</MinorVersion>
+        <MinorVersion Condition=" '$(BUILD_TAG)' == '' ">$([System.DateTime]::Now.ToString(`yyyy`))</MinorVersion>
 
         <!-- e.g.: 2.0 --> 
         <VersionPrefix Condition=" '$(VersionPrefix)' == '' ">$(MajorVersion).$(MinorVersion)</VersionPrefix>

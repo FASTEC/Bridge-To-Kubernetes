@@ -22,7 +22,7 @@ jobs:
       fail-fast: true
     env:
       RELEASE_FILENAME: ${{ matrix.platform }}.zip
-      REF_NAME: ${{ github.ref_type == 'tag' && github.ref_name || null }} # non-numerical will break this - expects format 2.0.20250103.0130
+      BUILD_TAG: ${{ github.ref_type == 'tag' && github.ref_name || null }} # non-numerical will break this - expects format 2.2025.0103.0130
     steps:
       - name: setup dotnet
         uses: actions/setup-dotnet@v4
@@ -31,8 +31,6 @@ jobs:
 
       - name: setup NuGet
         uses: nuget/setup-nuget@v2
-        with:
-          nuget-version: '2.x'
 
       - name: checkout source code
         uses: actions/checkout@v4
@@ -47,9 +45,6 @@ jobs:
 
       - name: nuget restore
         run: |
-          if [ ! -z "${{ env.REF_NAME }}" ]; then
-            BUILD_TAG="${{ env.REF_NAME }}"
-          fi
           nuget restore src/client.sln -Verbosity Normal -NonInteractive -ConfigFile src/nuget.config
 
       - name: dotnet publish src/dsc/dsc.csproj
@@ -59,9 +54,6 @@ jobs:
       - name: dotnet publish src/EndpointManagerLauncher/endpointmanagerlauncher.csproj
         if: ${{ matrix.platform == 'win-x64' || matrix.platform == 'win-arm64'}}
         run: |
-          if [ ! -z "${{ env.REF_NAME }}" ]; then
-            BUILD_TAG="${{ env.REF_NAME }}"
-          fi
           dotnet publish src/EndpointManagerLauncher/endpointmanagerlauncher.csproj -r ${{ matrix.platform }} -c Release --no-restore
 
       - name: endpointmanagerlauncher for windows

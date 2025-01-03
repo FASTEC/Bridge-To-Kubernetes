@@ -9,19 +9,22 @@ depends on each project.
         <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
     <PropertyGroup Condition=" '$(Version)' == '' ">
-        <!-- e.g.: BUILD_TAG=2.0.20250103.0130 -->
+        <!-- e.g.: BUILD_TAG=2.2025.0103.0130 -->
         <PatchVersion Condition=" '$(BUILD_TAG)' != '' ">$([System.Text.RegularExpressions.Regex]::Split('$(BUILD_TAG)', '\.')[2])</PatchVersion>
         <BuildVersion Condition=" '$(BUILD_TAG)' != '' ">$([System.Text.RegularExpressions.Regex]::Split('$(BUILD_TAG)', '\.')[3])</BuildVersion>
 
         <!-- e.g.: BUILD_TAG= -->
-        <PATCH_BUILD Condition=" '$(BUILD_TAG)' == '' ">$([System.DateTime]::Now.ToString(`yyyyMMdd.HHmm`))</PATCH_BUILD>
+        <PATCH_BUILD Condition=" '$(BUILD_TAG)' == '' ">$([System.DateTime]::Now.ToString(`MMdd.HHmm`))</PATCH_BUILD>
         <PatchVersion Condition=" '$(BUILD_TAG)' == '' ">$([System.Text.RegularExpressions.Regex]::Split('$(PATCH_BUILD)', '\.')[0])</PatchVersion>
         <BuildVersion Condition=" '$(BUILD_TAG)' == '' ">$([System.Text.RegularExpressions.Regex]::Split('$(PATCH_BUILD)', '\.')[1])</BuildVersion>
-        
-        <!-- e.g.: 20250103.0130 --> 
+
+        <!-- e.g.: 0103.0130 --> 
         <VersionSuffix Condition=" '$(VersionSuffix)' == '' ">$(PatchVersion).$(BuildVersion)</VersionSuffix>
 
-        <!-- e.g.: 2.0.20250103.0130 --> 
+        <!-- e.g.: 2.2025.0103.0130 --> 
         <Version>$(VersionPrefix).$(VersionSuffix)</Version>
+
+        <!-- e.g.: 2.2025.0103.0130 -->
+        <AssemblyVersion>$(Version)</AssemblyVersion>
     </PropertyGroup>
 </Project>
