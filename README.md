@@ -1,59 +1,86 @@
 
 # Bridge to Kubernetes
 
-[![Build Status](https://devdiv.visualstudio.com/DevDiv/_apis/build/status/Azure.Bridge-To-Kubernetes?branchName=main)](https://devdiv.visualstudio.com/DevDiv/_build/latest?definitionId=17861&branchName=main)
+[![CI Status](https://github.com/go1com/Bridge-To-Kubernetes/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/go1com/Bridge-To-Kubernetes/actions/workflows/ci.yml)
 
-[![CodeQL](https://github.com/Azure/Bridge-To-Kubernetes/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/Azure/Bridge-To-Kubernetes/actions/workflows/codeql-analysis.yml)
+## Maintainers
 
-## The Bridge to Kubernetes team plans to no longer actively maintain the project. Over the next few months, we will transition the project to an archival state. In the meantime, the project is still available to use and download. During this period, we will also explore and recommend community projects that provide similar benefits to Bridge to Kubernetes for your future use.
+This (forked) repository is being maintained by Go1. [Microsoft made the decision to no longer actively maintain the project](https://github.com/Azure/Bridge-To-Kubernetes/blob/fec6f302cf821bb0e958084c7d607dac0ba8888d/README.md).
 
-Welcome to Bridge-To-Kubernetes! Bridge to Kubernetes extends the Kubernetes perimeter to your development computer allowing you to write, test, and debug microservice code while connected to your Kubernetes cluster with the rest of your application or services. You can simply run your code natively on your development workstation while connected to the Kubernetes cluster, allowing you to test your code changes in the context of the larger application.
+## A simple history
 
-## Introduction Video
-https://learn.microsoft.com/en-us/shows/open-at-microsoft/get-started-with-bridge-to-kubernetes
+Microsoft had maintained this repository, in addition to a separate repository for [a VSCode extension](https://github.com/Azure/vscode-bridge-to-kubernetes).
 
-![image002](https://github.com/Azure/Bridge-To-Kubernetes/assets/105889062/7d71f41d-dafe-4039-afb1-31600f4a793f)
+This repository builds out [a CLI tool](https://github.com/Azure/Bridge-To-Kubernetes/blob/fec6f302cf821bb0e958084c7d607dac0ba8888d/README.md?plain=1#L37), which as far as Go1 could tell, was never actively championed by Microsoft in favor of the [VSCode extension](https://github.com/Azure/vscode-bridge-to-kubernetes). It also builds out the Docker images used for deployment into the Kubernetes cluster when using the service.
 
-## Key Features:
+Go1 has made the decision to actively maintain the [CLI tool](https://github.com/Azure/Bridge-To-Kubernetes/blob/fec6f302cf821bb0e958084c7d607dac0ba8888d/README.md?plain=1#L37), but not the [VSCode extension](https://github.com/Azure/vscode-bridge-to-kubernetes). The reason for this is:
 
-### Simplifying Microservice Development 
-- Eliminate the need to manually source, configure and compile external dependencies on your development computer.  
+- we continually experienced issues with the [VSCode extension](https://github.com/Azure/vscode-bridge-to-kubernetes) not shutting down resources in Kubernetes properly
+- the [VSCode extension](https://github.com/Azure/vscode-bridge-to-kubernetes) would do stuff like try to manage a local dotnet and kubectl installs, which added unnecesary complexity and caused issues (e.g. kubectl version and kubelet versions out of sync > 3 versions)
+- it simply abstracted away the underlying [a CLI tool](https://github.com/Azure/Bridge-To-Kubernetes/blob/fec6f302cf821bb0e958084c7d607dac0ba8888d/README.md?plain=1#L37) anyway, which seemed to be more robust.
 
-### Easy Debugging 
-- Run your usual debug profile with the added cluster configuration. You can debug your code as you normally would while taking advantage of the speed and flexibility of local debugging. 
+## Key changes in the Go1 fork
 
-### Developing and Testing End-to-End 
-- Test end-to-end during development time. Select an existing service in the cluster to route to your development machine where an instance of that service is running locally. Request initiated through the frontend of the application running in Kubernetes will route between services running in the cluster until the service you specified to redirect is called. 
-
-## Documentation
-- [Overview](https://learn.microsoft.com/visualstudio/bridge/overview-bridge-to-kubernetes)
-- [Visual Studio](https://learn.microsoft.com/visualstudio/bridge/bridge-to-kubernetes-vs)
-- [Visual Studio Code](https://learn.microsoft.com/visualstudio/bridge/bridge-to-kubernetes-vs-code)
+- The Docker images are now maintained in our DockerHub registry
+    - [go1com/routingmanager](https://hub.docker.com/r/go1com/routingmanager)
+    - [go1com/lpkrestorationjob](https://hub.docker.com/r/go1com/lpkrestorationjob)
+    - [go1com/lpkremoteagent](https://hub.docker.com/r/go1com/lpkremoteagent)
+- The CLI tool and Docker images have been upgraded from .NET 7 to [.NET 8, the current active LTS version](https://versionsof.net/)
+- The install scripts have been updated to remove the management of dependencies. Users need .NET and kubectl ready on their system. An install script for Windows was added.
+    - [install.sh](./scripts/install.sh)
+    - [install.ps1](./scripts/install.ps1)
+- The install scripts will pull down a simple wrapper around dsc(.exe), which is installed into the system path as `b2k`. This wrapper prompts for service, namespace and ports to expose. There is absolutely no obligation to use this, its just a nice wrapper that we like to use at Go1.
+    - [b2k.sh](./scripts/b2k.sh)
+    - [b2k.ps1](./scripts/b2k.ps1)
 
 ## CLI tool installation
-- ```curl -fsSL https://raw.githubusercontent.com/Azure/Bridge-To-Kubernetes/main/scripts/install.sh | bash```
-- Supports Linux, Darwin, Windows - use WSL (installation link [here](https://learn.microsoft.com/en-us/windows/wsl/install)) or Git Bash (installation link [here](https://git-scm.com/))
 
-## How to use the CLI
-- run the following command ``` dsc connect --service <service-name> --local-port <port-number> --namespace <namespace> --use-kubernetes-service-environment-variables ```
-- ```example is dsc connect --service stats-api --local-port 3001 --namespace todo-app```
-- for help  ``` dsc --help```
-- for version ```dsc --version```
+[Release version](https://github.com/go1com/Bridge-To-Kubernetes/releases) is explicitly required at this time (we may implicitly update this to use the latest release at a later date).
 
-## Microsoft Open Source Code of Conduct
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/)
+Examples below.
+
+### Linux / MacOS / WSL
+```bash
+curl -fsSL https://raw.githubusercontent.com/go1com/Bridge-To-Kubernetes/main/scripts/install.sh | bash -s -- 2.2025.0103.0242
+```
+
+### Windows
+Use the [install.ps1](./scripts/install.ps1) script:
+
+```powershell
+install.ps1 2.2025.0103.0242
+```
+
+## CLI usage - dsc
+
+```bash
+dsc connect \
+    --service ${SVC} \
+    --routing ${ROUTING} \
+    --namespace ${NS} \
+    --local-port ${PORT} \
+    --use-kubernetes-service-environment-variables
+```
+
+Where:
+- `service` is the name of the service you want to connect to
+- `routing` is a way of isolating the traffic. This is important for ensuring your running service does not interrupt cluster traffic, but can still reach out to other services as if it was in the cluster itself.
+- `namespace` is the namespace in the K8s cluster
+- `local-port` is the port your local service is going to run on. Its important to note that a K8s `Service` may have [multiple ports specified](https://kubernetes.io/docs/concepts/services-networking/service/#multi-port-services).
+    - Ports will be assigned top to bottom from the deployed `Service`
+    - Multiple ports can be opened locally with multiple `--local-port` args. E.g.: `dsc connect ... --local-port 3000 --local-port 5000`.
+    - The order in which `--local-port` is specified matters, first specified maps to first declared in the K8s `Service` etc.
+- `use-kubernetes-service-environment-variables` will ensure that the environment variables of the running pod are available in the local shell. Can be used with [KubernetesLocalProcessConfig.yaml](https://learn.microsoft.com/en-us/visualstudio/bridge/configure-bridge-to-kubernetes#local-configuration-using-kuberneteslocalprocessconfigyaml). We have [preserved this document as a pdf](./docs/configure-bridge-to-kubernetes.pdf) in the event that Microsoft kills it.
+
+## CLI usage - b2k
+
+A simple wrapper around `dsc` with a couple of prompts.
+
+- [b2k.sh](./scripts/b2k.sh)
+- [b2k.ps1](./scripts/b2k.ps1)
  
-## Trademarks
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft trademarks or logos is subject to and must follow [Microsoft’s Trademark & Brand Guidelines] (https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks). Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship. Any use of third-party trademarks or logos are subject to those third-party’s policies.
- 
-## Security Reporting Guidance
-Checkout the SECURITY.md file in this repo for details.
+Its convenient to be able to set the `SVC`, `NS` and `PORT` in the environment before executing to skip the prompts.
 
-## Data Collection
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the repository. There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at https://go.microsoft.com/fwlink/?LinkID=824704. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+## Support + Contributions
 
-## Support
-
-Bridge to Kubernetes is an open source project that is not covered by the [Microsoft Azure support policy](https://docs.microsoft.com/en-US/troubleshoot/azure/cloud-services/support-linux-open-source-technology). [Please search open issues here](https://github.com/Azure/Bridge-To-Kubernetes/issues), and if your issue isn't already represented [please open a new one](https://github.com/Azure/Bridge-To-Kubernetes/issues/new/choose). The project maintainers will respond to the best of their abilities and triage the most urgent bugs.
-
-
+Go1 forked this because we find it useful developing against our microservice architecture. We will support the best we can. Contributors welcome.
