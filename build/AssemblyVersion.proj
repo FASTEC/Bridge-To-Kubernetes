@@ -9,6 +9,17 @@ depends on each project.
         <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
     <PropertyGroup Condition=" '$(Version)' == '' ">
+        <!-- e.g.: BUILD_TAG=2.2025.0103.0130 --> 
+        <MajorVersion Condition=" '$(BUILD_TAG)' != '' ">$([System.Text.RegularExpressions.Regex]::Split('$(BUILD_TAG)', '\.')[0])</MajorVersion>
+        <MinorVersion Condition=" '$(BUILD_TAG)' != '' ">$([System.Text.RegularExpressions.Regex]::Split('$(BUILD_TAG)', '\.')[1])</MinorVersion>
+
+        <!-- e.g.: BUILD_TAG= -->
+        <MajorVersion Condition=" '$(BUILD_TAG)' == '' ">2</MajorVersion>
+        <MinorVersion Condition=" '$(BUILD_TAG)' == '' ">$([System.DateTime]::Now.ToString(`yyyy`))</MinorVersion>
+
+        <!-- e.g.: 2.2025 --> 
+        <VersionPrefix Condition=" '$(VersionPrefix)' == '' ">$(MajorVersion).$(MinorVersion)</VersionPrefix>
+
         <!-- e.g.: BUILD_TAG=2.2025.0103.0130 -->
         <PatchVersion Condition=" '$(BUILD_TAG)' != '' ">$([System.Text.RegularExpressions.Regex]::Split('$(BUILD_TAG)', '\.')[2])</PatchVersion>
         <BuildVersion Condition=" '$(BUILD_TAG)' != '' ">$([System.Text.RegularExpressions.Regex]::Split('$(BUILD_TAG)', '\.')[3])</BuildVersion>
