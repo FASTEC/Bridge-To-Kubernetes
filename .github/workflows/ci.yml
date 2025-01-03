@@ -29,11 +29,13 @@ jobs:
       actions: write # needed to tigger workflow
     env:
       SHA: ${{ github.sha }}
+      TAG_MAJOR: '2'
+      TAG_MINOR: '0'
     steps:
       - id: create_id
         run: |
-          export TAG=$(TZ="UTC" date +"%Y%m%d%H%M")
-          echo "TAG=${TAG}" >> ${GITHUB_OUTPUT}
+          export TAG_PATCH_BUILD=$(TZ="UTC" date +"%Y%m%d.%H%M")
+          echo "TAG=${TAG_MAJOR}.${TAG_MINOR}.${TAG_PATCH_BUILD}" >> ${GITHUB_OUTPUT}
 
       - name: create tag ${{ steps.create_id.outputs.TAG }} from sha ${{ env.SHA }}
         uses: actions/github-script@v7

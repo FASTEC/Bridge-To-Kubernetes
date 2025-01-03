@@ -4,12 +4,17 @@ The assembly version changes based on the build ID, so we can recover from its n
 -->
 <Project>
     <PropertyGroup>
-        <MajorVersion>1</MajorVersion>
-        <MinorVersion>0</MinorVersion>
+        <!-- e.g.: BUILD_TAG=2.0.20250103.0130 --> 
+        <MajorVersion Condition=" '$(BUILD_TAG)' != '' ">$([System.Text.RegularExpressions.Regex]::Split('$(BUILD_TAG)', '\.')[0])</MajorVersion>
+        <MinorVersion Condition=" '$(BUILD_TAG)' != '' ">$([System.Text.RegularExpressions.Regex]::Split('$(BUILD_TAG)', '\.')[1])</MinorVersion>
+
+        <!-- e.g.: BUILD_TAG= -->
+        <MajorVersion Condition=" '$(BUILD_TAG)' == '' ">2</MajorVersion>
+        <MinorVersion Condition=" '$(BUILD_TAG)' == '' ">0</MinorVersion>
+
+        <!-- e.g.: 2.0 --> 
         <VersionPrefix Condition=" '$(VersionPrefix)' == '' ">$(MajorVersion).$(MinorVersion)</VersionPrefix>
-        <BuildId Condition=" '$(BUILD_BUILDID)' != '' ">$([System.Int32]::Parse($(BUILD_BUILDID)))</BuildId>
-        <BuildNumber Condition=" '$(BuildId)' != '' ">$([MSBuild]::Divide($(BuildId), 1000))</BuildNumber>
-        <AssemblyVersion Condition=" '$(BuildNumber)' != '' ">$(VersionPrefix).$(BuildNumber)</AssemblyVersion>
+
         <AssemblyVersion Condition=" '$(AssemblyVersion)' == '' ">$(VersionPrefix)</AssemblyVersion>
     </PropertyGroup>
 </Project>

@@ -5,13 +5,23 @@ depends on each project.
 <Project>
 	<PropertyGroup>
 		<DisableUsernameInAssemblyVersion></DisableUsernameInAssemblyVersion>
+        <!-- e.g.: remove +sha from $(VersionPrefix).$(VersionSuffix)+sha -->
+        <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
     <PropertyGroup Condition=" '$(Version)' == '' ">
-        <BUILD_BUILDNUMBER Condition=" '$(BUILD_BUILDNUMBER)' == '' ">$(MINDARO_BUILD_NUMBER)</BUILD_BUILDNUMBER>
-        <BUILD_BUILDNUMBER Condition=" '$(BUILD_BUILDNUMBER)' == '' ">$([System.DateTime]::Now.ToString(`yyyyMMdd`))</BUILD_BUILDNUMBER>
-        <VersionSuffix Condition=" '$(VersionSuffix)' == '' and '$(Configuration)' == 'Debug' and '$(USERNAME)' != '' and '$(DisableUsernameInAssemblyVersion)' == '' ">$(BUILD_BUILDNUMBER)-$(USERNAME)</VersionSuffix>
-        <VersionSuffix Condition=" '$(VersionSuffix)' == '' ">$(BUILD_BUILDNUMBER)</VersionSuffix>
-        <VersionPrefix Condition=" '$(VersionPrefix)' == '' ">$(AssemblyVersion)</VersionPrefix>
+        <!-- e.g.: BUILD_TAG=2.0.20250103.0130 -->
+        <PatchVersion Condition=" '$(BUILD_TAG)' != '' ">$([System.Text.RegularExpressions.Regex]::Split('$(BUILD_TAG)', '\.')[2])</PatchVersion>
+        <BuildVersion Condition=" '$(BUILD_TAG)' != '' ">$([System.Text.RegularExpressions.Regex]::Split('$(BUILD_TAG)', '\.')[3])</BuildVersion>
+
+        <!-- e.g.: BUILD_TAG= -->
+        <PATCH_BUILD Condition=" '$(BUILD_TAG)' == '' ">$([System.DateTime]::Now.ToString(`yyyyMMdd.HHmm`))</PATCH_BUILD>
+        <PatchVersion Condition=" '$(BUILD_TAG)' == '' ">$([System.Text.RegularExpressions.Regex]::Split('$(PATCH_BUILD)', '\.')[0])</PatchVersion>
+        <BuildVersion Condition=" '$(BUILD_TAG)' == '' ">$([System.Text.RegularExpressions.Regex]::Split('$(PATCH_BUILD)', '\.')[1])</BuildVersion>
+        
+        <!-- e.g.: 20250103.0130 --> 
+        <VersionSuffix Condition=" '$(VersionSuffix)' == '' ">$(PatchVersion).$(BuildVersion)</VersionSuffix>
+
+        <!-- e.g.: 2.0.20250103.0130 --> 
         <Version>$(VersionPrefix).$(VersionSuffix)</Version>
     </PropertyGroup>
 </Project>
