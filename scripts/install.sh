@@ -9,7 +9,7 @@
 #                    |___/
 # usage:
 #    curl -fsSL https://raw.githubusercontent.com/go1com/Bridge-To-Kubernetes/main/scripts/install.sh | bash -s -- [version]
-#    Example: curl -fsSL https://raw.githubusercontent.com/go1com/Bridge-To-Kubernetes/main/scripts/install.sh | bash -s -- 202501020709
+#    Example: curl -fsSL https://raw.githubusercontent.com/go1com/Bridge-To-Kubernetes/main/scripts/install.sh | bash -s -- 2.2025.0103.0231
 #    From: https://github.com/go1com/Bridge-To-Kubernetes/releases
 set -ef
 
