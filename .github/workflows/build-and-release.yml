@@ -31,6 +31,8 @@ jobs:
 
       - name: setup NuGet
         uses: nuget/setup-nuget@v2
+        with:
+          nuget-version: '2.x'
 
       - name: checkout source code
         uses: actions/checkout@v4
