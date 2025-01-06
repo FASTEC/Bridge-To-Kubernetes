@@ -277,7 +277,11 @@ install() {
         log ERROR "Versions: https://github.com/go1com/Bridge-To-Kubernetes/releases"
         exit 1
     fi
-    echo "This install will fail without kubectl and dotnet 8 present"
+
+    echo "This tool was built using dotnet LTS (8.x)"
+    echo "This tool requires kubectl"
+    kubectl version --client=true
+
     log INFO "Proceeding with installation for VERSION=${VERSION}"
     # check_jq_processor_present
     # check_kubectl_present

@@ -3,6 +3,10 @@ param(
     [string]$Version
 )
 
+Write-Host "This tool was built using dotnet LTS (8.x)"
+Write-Host "This tool requires kubectl"
+& kubectl version --client=true
+
 # Define installation directory
 $installDir = "$env:LOCALAPPDATA\Bridge-To-Kubernetes"
 $zipUrl = "https://github.com/go1com/Bridge-To-Kubernetes/releases/download/${Version}/win-x64.zip"

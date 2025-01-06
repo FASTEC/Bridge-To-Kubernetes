@@ -26,7 +26,8 @@ Go1 has made the decision to actively maintain the [CLI tool](https://github.com
     - [go1com/lpkrestorationjob](https://hub.docker.com/r/go1com/lpkrestorationjob)
     - [go1com/lpkremoteagent](https://hub.docker.com/r/go1com/lpkremoteagent)
 - The CLI tool and Docker images have been upgraded from .NET 7 to [.NET 8, the current active LTS version](https://versionsof.net/)
-- The install scripts have been updated to remove the management of dependencies. Users need .NET and kubectl ready on their system. An install script for Windows was added.
+- The CLI tool is only built using `--self-contained true`, so users do not need a local dotnet installation.
+- The install scripts have been updated to remove the management of dependencies. Users need kubectl ready on their system. An install script for Windows was added.
     - [install.sh](./scripts/install.sh)
     - [install.ps1](./scripts/install.ps1)
 - The install scripts will pull down a simple wrapper around dsc(.exe), which is installed into the system path as `b2k`. This wrapper prompts for service, namespace and ports to expose. There is absolutely no obligation to use this, its just a nice wrapper that we like to use at Go1.
