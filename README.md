@@ -50,7 +50,7 @@ curl -fsSL https://raw.githubusercontent.com/go1com/Bridge-To-Kubernetes/main/sc
 Open PowerShell and run:
 
 ```powershell
-& ([scriptblock]::Create((iwr  https://raw.githubusercontent.com/go1com/Bridge-To-Kubernetes/main/scripts/install.ps1 -useb))) 2.2025.0103.0242
+& ([scriptblock]::Create((iwr https://raw.githubusercontent.com/go1com/Bridge-To-Kubernetes/main/scripts/install.ps1 -useb))) -Version 2.2025.0103.0242
 ```
 
 ## CLI usage - dsc
