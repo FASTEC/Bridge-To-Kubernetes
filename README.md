@@ -46,10 +46,11 @@ curl -fsSL https://raw.githubusercontent.com/go1com/Bridge-To-Kubernetes/main/sc
 ```
 
 ### Windows
-Use the [install.ps1](./scripts/install.ps1) script:
+
+Open PowerShell and run:
 
 ```powershell
-install.ps1 2.2025.0103.0242
+& ([scriptblock]::Create((iwr  https://raw.githubusercontent.com/go1com/Bridge-To-Kubernetes/main/scripts/install.ps1 -useb))) 2.2025.0103.0242
 ```
 
 ## CLI usage - dsc
